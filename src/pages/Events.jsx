@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import config from '../config';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FiPlus, FiEdit3, FiTrash2, FiVideo, FiUploadCloud, 
@@ -8,8 +9,8 @@ import {
 
 const EventsAdmin = () => {
   // API Configuration
-  const CMS_API = "http://localhost:3000/cms/events";
-  const UPLOAD_API = "http://localhost:3000/cms/upload/upload";
+  const CMS_API = `${config.BASE_URL}/cms/events`;
+  const UPLOAD_API = `${config.BASE_URL}/cms/upload/upload`;
 
   // State Management
   const [events, setEvents] = useState([]);

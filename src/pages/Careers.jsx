@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import config from "../config";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FiPlus, FiEdit3, FiTrash2, FiMapPin, FiClock, FiX, FiChevronDown, 
@@ -9,7 +10,7 @@ import {
 
 const CareerAdmin = () => {
   // API Configuration
-  const CMS_API = "http://localhost:3000/cms/career";
+  const CMS_API = `${config.BASE_URL}/cms/career`;
 
   // List States
   const [jobs, setJobs] = useState([]);

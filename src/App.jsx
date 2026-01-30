@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import AdminLayout from './components/AdminLayout';
 
 import Dashboard from './pages/Dashboard';
@@ -23,6 +23,7 @@ import CertificateAdmin from './pages/CertificateAdmin';
 const App = () => {
   return (
     <Routes>
+      <Route path="/" element={<Navigate to="/admin" replace />} />
       <Route path="/admin" element={<AdminLayout />}>
         {/* Main pages */}
         <Route index element={<Dashboard />} />

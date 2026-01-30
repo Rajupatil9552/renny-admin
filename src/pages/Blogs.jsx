@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import config from '../config';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FiPlus, FiEdit3, FiTrash2, FiFileText, FiType, FiList, 
@@ -7,8 +8,8 @@ import {
 } from 'react-icons/fi';
 
 const BlogAdmin = () => {
-  const CMS_API = "http://localhost:3000/cms/blogs";
-  const UPLOAD_API = "http://localhost:3000/cms/upload/upload"; // Added S3 Route
+  const CMS_API = `${config.BASE_URL}/cms/blogs`;
+  const UPLOAD_API = `${config.BASE_URL}/cms/upload/upload`; // Added S3 Route
 
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(false);

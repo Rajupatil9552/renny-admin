@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import config from '../config';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiEdit2, FiTrash2, FiPlus, FiX, FiFileText, FiExternalLink, FiUploadCloud, FiLink } from 'react-icons/fi';
 
@@ -14,9 +15,9 @@ const IPODocuments = () => {
   const [formData, setFormData] = useState({ recordId: "", title: "", url: "", type: "file" });
 
   const brandColor = "#292C44";
-  const CMS_API = "http://localhost:3000/cms/ipo-documents";
-  const PUBLIC_API = "http://localhost:3000/api/ipo-documents";
-  const UPLOAD_API = "http://localhost:3000/cms/upload/upload"; 
+  const CMS_API = `${config.BASE_URL}/cms/ipo-documents`;
+  const PUBLIC_API = `${config.BASE_URL}/api/ipo-documents`;
+  const UPLOAD_API = `${config.BASE_URL}/cms/upload/upload`; 
 
   // 1. FETCH: Get all documents
   const fetchIpoDocs = async () => {

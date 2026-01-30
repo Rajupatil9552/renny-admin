@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import config from "../config";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FiEdit2,
@@ -33,9 +34,9 @@ const CorporateGovernance = () => {
 
   const [formData, setFormData] = useState({});
 
-  const CMS_API = "http://localhost:3000/cms/governance";
-  const PUBLIC_API = "http://localhost:3000/api/governance";
-  const UPLOAD_API = "http://localhost:3000/cms/upload/upload"; // Matches your registered route
+  const CMS_API = `${config.BASE_URL}/cms/governance`;
+  const PUBLIC_API = `${config.BASE_URL}/api/governance`;
+  const UPLOAD_API = `${config.BASE_URL}/cms/upload/upload`; // Matches your registered route
 
   const fetchGovernance = async () => {
     try {

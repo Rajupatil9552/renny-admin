@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import config from "../config";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiEdit2, FiTrash2, FiPlus, FiX, FiFileText, FiExternalLink, FiUploadCloud } from "react-icons/fi";
 
@@ -18,9 +19,9 @@ const IndustryReport = () => {
   });
 
   const brandColor = "#292C44";
-  const API_BASE = "http://localhost:3000/cms/industry-report"; 
-  const PUBLIC_API = "http://localhost:3000/api/industry-report";
-  const UPLOAD_API = "http://localhost:3000/cms/upload/upload"; // Consistent S3 route
+  const API_BASE = `${config.BASE_URL}/cms/industry-report`; 
+  const PUBLIC_API = `${config.BASE_URL}/api/industry-report`;
+  const UPLOAD_API = `${config.BASE_URL}/cms/upload/upload`; // Consistent S3 route
 
   const fetchReports = async () => {
     try {

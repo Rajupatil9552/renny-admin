@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import config from '../config';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiUploadCloud, FiTrash2, FiEdit3, FiSearch, FiPlus, FiX, FiInfo } from 'react-icons/fi';
 
@@ -19,8 +20,8 @@ const CertificateAdmin = () => {
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const CMS_API = "http://localhost:3000/api/certificates";
-  const UPLOAD_API = "http://localhost:3000/cms/upload/upload"; 
+  const CMS_API = `${config.BASE_URL}/api/certificates`;
+  const UPLOAD_API = `${config.BASE_URL}/cms/upload/upload`; 
   const fileInputRef = useRef(null);
 
   useEffect(() => { fetchCerts(); }, []);

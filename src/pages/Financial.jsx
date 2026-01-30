@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import config from "../config";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiEdit2, FiTrash2, FiPlus, FiX, FiFileText, FiUploadCloud } from "react-icons/fi";
 
@@ -10,10 +11,10 @@ const Financial = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   
-  const PUBLIC_API = "http://localhost:3000/api/financials";
-  const CMS_API = "http://localhost:3000/cms/financials";
+  const PUBLIC_API = `${config.BASE_URL}/api/financials`;
+  const CMS_API = `${config.BASE_URL}/cms/financials`;
  // Change this in your Financial.jsx:
-const UPLOAD_API = "http://localhost:3000/cms/upload/upload";
+const UPLOAD_API = `${config.BASE_URL}/cms/upload/upload`;
 
   const CATEGORIES = [
     { key: "audited", label: "Audited Financials of the Company" },

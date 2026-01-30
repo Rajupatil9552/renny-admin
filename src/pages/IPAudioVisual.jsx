@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import config from '../config';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiEdit2, FiTrash2, FiPlus, FiX, FiVideo, FiExternalLink, FiUploadCloud, FiLink, FiCheckCircle } from 'react-icons/fi';
 
@@ -19,9 +20,9 @@ const IPAudioVisual = () => {
   });
 
   const brandColor = "#292C44";
-  const CMS_API = "http://localhost:3000/cms/ipo-av"; 
-  const PUBLIC_API = "http://localhost:3000/api/ipo-av";
-  const UPLOAD_API = "http://localhost:3000/cms/upload/upload";
+  const CMS_API = `${config.BASE_URL}/cms/ipo-av`; 
+  const PUBLIC_API = `${config.BASE_URL}/api/ipo-av`;
+  const UPLOAD_API = `${config.BASE_URL}/cms/upload/upload`;
 
   const fetchVideos = async () => {
     try {

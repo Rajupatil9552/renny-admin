@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import config from '../config';
 import {
   FileText,
   Newspaper,
@@ -22,19 +23,19 @@ const Dashboard = () => {
   const fetchData = async () => {
     try {
       // 1. Fetch News
-      const newsRes = await axios.get("http://localhost:3000/cms/news");
+      const newsRes = await axios.get(`${config.BASE_URL}/cms/news`);
       const newsData = Array.isArray(newsRes.data) ? newsRes.data : newsRes.data.data || [];
 
       // 2. Fetch Events (sending role=admin to get all)
-      const eventsRes = await axios.get("http://localhost:3000/cms/events?role=admin");
+      const eventsRes = await axios.get(`${config.BASE_URL}/cms/events?role=admin`);
       const eventsData = eventsRes.data.data || [];
 
       // 3. Fetch Applications
-      const appsRes = await axios.get("http://localhost:3000/cms/career/applications");
+      const appsRes = await axios.get(`${config.BASE_URL}/cms/career/applications`);
       const appsData = appsRes.data.data || [];
 
       // 4. Fetch Enquiries
-      const contactRes = await axios.get("http://localhost:3000/cms/contact");
+      const contactRes = await axios.get(`${config.BASE_URL}/cms/contact`);
       const contactData = contactRes.data.data || [];
 
       setStats({

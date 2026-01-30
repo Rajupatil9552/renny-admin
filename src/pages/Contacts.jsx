@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import config from '../config';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FiMail, FiPhone, FiUser, FiMessageSquare, FiTrash2, 
@@ -8,7 +9,7 @@ import {
 
 const Contact = () => {
   // API Route for Admin
-  const CMS_API = "http://localhost:3000/cms/contact";
+  const CMS_API = `${config.BASE_URL}/cms/contact`;
 
   const [enquiries, setEnquiries] = useState([]);
   const [loading, setLoading] = useState(true);
