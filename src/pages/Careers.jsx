@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import config from "../config";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FiPlus, FiEdit3, FiTrash2, FiMapPin, FiClock, FiX, FiChevronDown, 
   FiChevronUp, FiBriefcase, FiDollarSign, FiFileText, FiSearch, 
   FiUser, FiMail, FiPhone, FiCalendar, FiGlobe, FiExternalLink
 } from "react-icons/fi";
+import { API } from "../config/api";
+import { notifySuccess, notifyError } from "../utils/notifications";
+
+
+
 
 const CareerAdmin = () => {
   // API Configuration
-  const CMS_API = `${config.BASE_URL}/cms/career`;
+  const CMS_API = API.CMS_CAREER;
 
   // List States
   const [jobs, setJobs] = useState([]);
@@ -57,9 +61,7 @@ const CareerAdmin = () => {
       view === "jobs" 
         ? setJobs(res.data.data || []) 
         : setApps(res.data.data || []);
-    } catch (err) {
-      console.error("Fetch error:", err);
-    }
+    } catch { notifyError("Unable to complete the request."); }
   };
 
   const handleSubmit = async (e) => {
@@ -76,9 +78,9 @@ const CareerAdmin = () => {
       await axios.post(`${CMS_API}/jobs/upsert`, payload);
       resetForm();
       fetchData();
-      alert("Job record synchronized successfully!");
+      notifySuccess("Job record synchronized successfully!");
     } catch (err) {
-      alert("Save failed: " + (err.response?.data?.message || "Server Error"));
+      notifyError("Save failed: " + (err.response?.data?.message || "Server Error"));
     } finally {
       setLoading(false);
     }
@@ -110,8 +112,8 @@ const CareerAdmin = () => {
     try {
       await axios.delete(`${CMS_API}/${path}`);
       fetchData();
-    } catch (err) {
-      alert("Delete failed");
+    } catch {
+      notifyError("Delete failed");
     }
   };
 
