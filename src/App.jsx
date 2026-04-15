@@ -1,5 +1,5 @@
 import { Suspense, lazy } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import AdminLayout from './components/AdminLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -21,8 +21,9 @@ const OurPolicies = lazy(() => import('./pages/OurPolicies'));
 const SustainabilityLeads = lazy(() => import('./pages/SustainabilityLeads'));
 const CertificateAdmin = lazy(() => import('./pages/CertificateAdmin'));
 const ManageRoles = lazy(() => import('./pages/ManageRoles'));
+const CreateAdmin = lazy(() => import('./pages/CreateAdmin'));
+const ChangePassword = lazy(() => import('./pages/ChangePassword'));
 const Login = lazy(() => import('./pages/Login'));
-const Register = lazy(() => import('./pages/Register'));
 const PageSectionsAdmin = lazy(() => import('./pages/PageSectionsAdmin'));
 const TimelineAdmin = lazy(() => import('./pages/TimelineAdmin'));
 const UnitsAdmin = lazy(() => import('./pages/UnitsAdmin'));
@@ -51,7 +52,8 @@ const App = () => {
     <Suspense fallback={<AppLoadingFallback />}>
       <Routes>
         <Route path="/" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/register" element={<Navigate to="/" replace />} />
+        <Route path="/change-password" element={<ChangePassword />} />
 
         <Route element={<ProtectedRoute />}>
           <Route path="/admin" element={<AdminLayout />}>
@@ -65,6 +67,7 @@ const App = () => {
             <Route path="certificate-admin" element={<CertificateAdmin />} />
             <Route path="newsletter" element={<Newsletter />} />
             <Route path="roles" element={<ManageRoles />} />
+            <Route path="create-admin" element={<CreateAdmin />} />
             <Route path="page-sections" element={<PageSectionsAdmin />} />
             <Route path="timeline" element={<TimelineAdmin />} />
             <Route path="units" element={<UnitsAdmin />} />

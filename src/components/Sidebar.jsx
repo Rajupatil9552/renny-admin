@@ -1,29 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import logo from '../assets/RennyLogo.png';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { LazyImage } from './ui/LazyImage';
 import { 
   BarChart, Users, FileText, Newspaper, Calendar, LayoutTemplate, 
   Clock, Factory, ShieldCheck, Leaf, Star, Box, Package, ChevronDown, 
-  LogOut, Layers, MessageSquare, Briefcase, Mail, Award, Settings, MapPin
+  LogOut, Layers, MessageSquare, Briefcase, Mail, Award, Settings, MapPin, UserPlus
 } from 'lucide-react';
+import { getAdminInfo, isSuperadmin } from '../utils/auth';
 
 const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [openInvestor, setOpenInvestor] = useState(false);
+  const adminInfo = getAdminInfo();
 
-  // Auto-expand Investor Relations if we are inside it
-  useEffect(() => {
-    if (location.pathname.includes('/admin/financials') || 
-        location.pathname.includes('/admin/corporate-governance') ||
-        location.pathname.includes('/admin/industry-report') ||
-        location.pathname.includes('/admin/ipo') ||
-        location.pathname.includes('/admin/Share-holding-pattern') ||
-        location.pathname.includes('/admin/our-policies')) {
-      setOpenInvestor(true);
-    }
-  }, [location.pathname]);
+  const isInvestorPathActive = location.pathname.includes('/admin/financials') ||
+    location.pathname.includes('/admin/corporate-governance') ||
+    location.pathname.includes('/admin/industry-report') ||
+    location.pathname.includes('/admin/ipo') ||
+    location.pathname.includes('/admin/Share-holding-pattern') ||
+    location.pathname.includes('/admin/our-policies');
+
+  const isInvestorOpen = openInvestor || isInvestorPathActive;
 
   const navItemClass = ({ isActive }) =>
     `group flex items-center gap-3 px-3 py-2 rounded-2xl text-sm font-medium transition-all duration-200 ${
@@ -66,10 +65,18 @@ const Sidebar = () => {
               <BarChart className="w-4 h-4" />
               <span>Dashboard</span>
             </NavLink>
-            <NavLink to="/admin/roles" className={navItemClass}>
-              <Users className="w-4 h-4" />
-              <span>Manage Roles</span>
-            </NavLink>
+            {isSuperadmin(adminInfo) && (
+              <NavLink to="/admin/roles" className={navItemClass}>
+                <Users className="w-4 h-4" />
+                <span>Manage Roles</span>
+              </NavLink>
+            )}
+            {isSuperadmin(adminInfo) && (
+              <NavLink to="/admin/create-admin" className={navItemClass}>
+                <UserPlus className="w-4 h-4" />
+                <span>Create Admin</span>
+              </NavLink>
+            )}
           </nav>
         </div>
 
@@ -181,10 +188,10 @@ const Sidebar = () => {
                 <Layers className="w-4 h-4" />
                 <span>Investor Relations</span>
               </div>
-              <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${openInvestor ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isInvestorOpen ? 'rotate-180' : ''}`} />
             </button>
 
-            {openInvestor && (
+            {isInvestorOpen && (
               <div className="mt-1 space-y-0.5 animate-in slide-in-from-top-2 fade-in duration-200">
                 <NavLink to="/admin/financials/" className={navSubItemClass}>
                   Financials

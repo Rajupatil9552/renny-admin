@@ -1,11 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import axios from 'axios';
+import { Navigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Shield, ShieldAlert, User, Check, X, Search, MoreVertical } from 'lucide-react';
 import { format } from 'date-fns';
 import { API } from '../config/api';
+import { getAdminInfo, isSuperadmin } from '../utils/auth';
 
 const ManageRoles = () => {
+    const adminInfo = useMemo(() => getAdminInfo(), []);
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -20,6 +23,10 @@ const ManageRoles = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    if (!isSuperadmin(adminInfo)) {
+        return <Navigate to="/admin" replace />;
+    }
+
     const fetchUsers = async () => {
         try {
             setLoading(true);
@@ -28,7 +35,8 @@ const ManageRoles = () => {
             // Handle structures like { data: [...] } or just [...]
             const userList = Array.isArray(data) ? data : data.data || data.admins || [];
             setUsers(userList);
-        } catch (error) {            // For demonstration, mock some data if the endpoint fails
+        } catch {
+            // For demonstration, mock some data if the endpoint fails
             if (users.length === 0) {
                 toast.warning("Failed to load users from backend. Showing simulated data.");
                 setUsers([
@@ -58,7 +66,8 @@ const ManageRoles = () => {
             // Update local state
             setUsers(users.map(u => u._id === userId ? { ...u, role: newRole } : u));
             toast.success(`Role successfully changed to ${newRole}`);
-        } catch (error) {            // Fallback update in case of mock data interacting
+        } catch {
+            // Fallback update in case of mock data interacting
             setUsers(users.map(u => u._id === userId ? { ...u, role: newRole } : u));
             toast.warning("Backend API failed, but updating UI for demonstration.");
         } finally {
@@ -73,7 +82,8 @@ const ManageRoles = () => {
             await axios.delete(`${UPDATE_API_URL}/${userId}`);
             setUsers(users.filter(u => u._id !== userId));
             toast.success("User deleted successfully.");
-        } catch (error) {            // Fallback UI update
+        } catch {
+            // Fallback UI update
             setUsers(users.filter(u => u._id !== userId));
             toast.warning("Backend delete API failed, simulating deletion in UI.");
         }

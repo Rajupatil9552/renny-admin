@@ -6,6 +6,7 @@ import { Lock, Mail, ArrowRight } from 'lucide-react';
 import logo from '../assets/RennyLogo.png';
 import { LazyImage } from '../components/ui/LazyImage';
 import { API } from '../config/api';
+import { getPostAuthRoute } from '../utils/auth';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -29,7 +30,7 @@ const Login = () => {
             localStorage.setItem('adminToken', data.token);
             localStorage.setItem('adminInfo', JSON.stringify(data));
             toast.success("Login Successful!");
-            navigate('/admin');
+            navigate(getPostAuthRoute(data), { replace: true });
         } catch (err) {
             toast.error(err.response?.data?.message || err.message || "Login failed");
         } finally {
@@ -115,10 +116,7 @@ const Login = () => {
                 </form>
 
                 <p className="mt-8 text-center text-sm font-medium text-gray-500">
-                    Need an account?{' '}
-                    <Link to="/register" className="text-indigo-600 hover:text-indigo-500 font-semibold transition-colors">
-                        Register here
-                    </Link>
+                    If you need a new admin account, contact your existing superadmin.
                 </p>
             </div>
         </div>

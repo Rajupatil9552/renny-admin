@@ -10,6 +10,7 @@ export const API = {
   AUTH_LOGIN:           `${BASE}/cms/auth/login`,
   AUTH_REGISTER:        `${BASE}/cms/auth/register`,
   AUTH_ADMINS:          `${BASE}/cms/auth/admins`,
+  AUTH_CHANGE_PASSWORD: `${BASE}/cms/auth/change-password`,
 
   // ─── CMS routes ───────────────────────────────────────────────────────────
   CMS_NEWS:             `${BASE}/cms/news`,
