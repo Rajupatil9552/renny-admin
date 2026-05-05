@@ -3,7 +3,7 @@ import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FiEdit3, FiTrash2, FiFileText, FiType, FiList, 
-  FiChevronDown, FiChevronUp, FiImage, FiX, FiLayers, FiCalendar, FiHash, FiUploadCloud, FiGrid
+  FiChevronDown, FiChevronUp, FiChevronRight, FiImage, FiX, FiLayers, FiCalendar, FiHash, FiUploadCloud, FiGrid
 } from 'react-icons/fi';
 import { API } from '../config/api';
 import { notifySuccess, notifyError } from "../utils/notifications";
@@ -124,7 +124,7 @@ const BlogAdmin = () => {
     setShowForm(false);
   };
 
-  const addSection = (type) => {
+  const addSection = (type, insertIndex = null) => {
     const newSection = {
       type,
       content: '',
@@ -132,7 +132,31 @@ const BlogAdmin = () => {
       listItems: type.includes('list') ? [{ title: '', description: '' }] : [],
       table: type === 'table' ? { headers: ['Column 1'], rows: [['']] } : undefined
     };
-    setFormData({ ...formData, bodySections: [...formData.bodySections, newSection] });
+    if (insertIndex !== null) {
+      const updated = [...formData.bodySections];
+      updated.splice(insertIndex, 0, newSection);
+      setFormData({ ...formData, bodySections: updated });
+    } else {
+      setFormData({ ...formData, bodySections: [...formData.bodySections, newSection] });
+    }
+  };
+
+  const moveSectionUp = (index) => {
+    if (index === 0) return;
+    const updated = [...formData.bodySections];
+    const temp = updated[index];
+    updated[index] = updated[index - 1];
+    updated[index - 1] = temp;
+    setFormData({ ...formData, bodySections: updated });
+  };
+
+  const moveSectionDown = (index) => {
+    if (index === formData.bodySections.length - 1) return;
+    const updated = [...formData.bodySections];
+    const temp = updated[index];
+    updated[index] = updated[index + 1];
+    updated[index + 1] = temp;
+    setFormData({ ...formData, bodySections: updated });
   };
 
   const updateSection = (index, value) => {
@@ -154,6 +178,12 @@ const BlogAdmin = () => {
   const addListItem = (sIdx) => {
     const updated = [...formData.bodySections];
     updated[sIdx].listItems.push({ title: '', description: '' });
+    setFormData({ ...formData, bodySections: updated });
+  };
+
+  const removeListItem = (sIdx, lIdx) => {
+    const updated = [...formData.bodySections];
+    updated[sIdx].listItems = updated[sIdx].listItems.filter((_, i) => i !== lIdx);
     setFormData({ ...formData, bodySections: updated });
   };
 
@@ -270,6 +300,8 @@ const BlogAdmin = () => {
                     <h3 className="text-xs font-black uppercase tracking-widest text-gray-400">Content Builder</h3>
                     <div className="flex flex-wrap gap-2">
                       <button type="button" onClick={() => addSection('heading')} className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-xl hover:bg-gray-100 text-xs font-bold"><FiType /> Heading</button>
+                      <button type="button" onClick={() => addSection('sub-heading')} className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-xl hover:bg-gray-100 text-xs font-bold"><FiEdit3 /> Sub Heading</button>
+                      <button type="button" onClick={() => addSection('sub-point')} className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-xl hover:bg-gray-100 text-xs font-bold"><FiChevronRight /> Sub Point</button>
                       <button type="button" onClick={() => addSection('paragraph')} className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-xl hover:bg-gray-100 text-xs font-bold"><FiLayers /> Paragraph</button>
                       <button type="button" onClick={() => addSection('image')} className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-xl hover:bg-gray-100 text-xs font-bold"><FiImage /> Image</button>
                       <button type="button" onClick={() => addSection('bullet-list')} className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-xl hover:bg-gray-100 text-xs font-bold"><FiList /> Points</button>
@@ -279,8 +311,34 @@ const BlogAdmin = () => {
                   </div>
 
                   {formData.bodySections.map((section, sIndex) => (
-                    <div key={sIndex} className="relative p-6 bg-gray-50/50 rounded-3xl border border-gray-100 group">
-                      <button type="button" onClick={() => removeSection(sIndex)} className="absolute -top-2 -right-2 w-8 h-8 bg-red-50 text-red-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-sm"><FiX size={14} /></button>
+                    <React.Fragment key={sIndex}>
+                      {/* Insert Section Toolbar */}
+                      <div className="flex justify-center -my-3 relative z-10 opacity-0 hover:opacity-100 focus-within:opacity-100 transition-all duration-300 h-6 items-center group/insert">
+                        <div className="w-full absolute h-[1px] bg-blue-100 top-1/2 -z-10 hidden group-hover/insert:block"></div>
+                        <div className="bg-white border border-gray-200 shadow-md rounded-full px-3 py-1 flex gap-2 items-center scale-90 hover:scale-100 transition-transform">
+                          <span className="text-[10px] font-bold text-gray-400 mr-1">INSERT:</span>
+                          <button type="button" onClick={() => addSection('heading', sIndex)} className="p-1 hover:bg-blue-50 hover:text-blue-600 rounded text-gray-400" title="Heading"><FiType size={14} /></button>
+                          <button type="button" onClick={() => addSection('sub-heading', sIndex)} className="p-1 hover:bg-blue-50 hover:text-blue-600 rounded text-gray-400" title="Sub Heading"><FiEdit3 size={14} /></button>
+                          <button type="button" onClick={() => addSection('sub-point', sIndex)} className="p-1 hover:bg-blue-50 hover:text-blue-600 rounded text-gray-400" title="Sub Point"><FiChevronRight size={14} /></button>
+                          <button type="button" onClick={() => addSection('paragraph', sIndex)} className="p-1 hover:bg-blue-50 hover:text-blue-600 rounded text-gray-400" title="Paragraph"><FiLayers size={14} /></button>
+                          <button type="button" onClick={() => addSection('image', sIndex)} className="p-1 hover:bg-blue-50 hover:text-blue-600 rounded text-gray-400" title="Image"><FiImage size={14} /></button>
+                          <button type="button" onClick={() => addSection('bullet-list', sIndex)} className="p-1 hover:bg-blue-50 hover:text-blue-600 rounded text-gray-400" title="Points"><FiList size={14} /></button>
+                          <button type="button" onClick={() => addSection('numbered-list', sIndex)} className="p-1 hover:bg-blue-50 hover:text-blue-600 rounded text-gray-400" title="Numbers"><FiHash size={14} /></button>
+                          <button type="button" onClick={() => addSection('table', sIndex)} className="p-1 hover:bg-blue-50 hover:text-blue-600 rounded text-gray-400" title="Table"><FiGrid size={14} /></button>
+                        </div>
+                      </div>
+
+                      <div className="relative p-6 bg-gray-50/50 rounded-3xl border border-gray-100 group">
+                        {/* Section Actions */}
+                        <div className="absolute -top-3 right-4 flex gap-1 opacity-0 group-hover:opacity-100 transition-all z-10">
+                          {sIndex > 0 && (
+                            <button type="button" onClick={() => moveSectionUp(sIndex)} className="w-8 h-8 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center shadow-sm hover:bg-blue-100" title="Move Up"><FiChevronUp size={16} /></button>
+                          )}
+                          {sIndex < formData.bodySections.length - 1 && (
+                            <button type="button" onClick={() => moveSectionDown(sIndex)} className="w-8 h-8 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center shadow-sm hover:bg-blue-100" title="Move Down"><FiChevronDown size={16} /></button>
+                          )}
+                          <button type="button" onClick={() => removeSection(sIndex)} className="w-8 h-8 bg-red-50 text-red-500 rounded-full flex items-center justify-center shadow-sm hover:bg-red-100 ml-2" title="Remove Section"><FiX size={14} /></button>
+                        </div>
                       
                       {section.type === 'image' ? (
                         <div className="space-y-4 flex flex-col items-center">
@@ -298,8 +356,8 @@ const BlogAdmin = () => {
                           <p className="text-[10px] font-bold text-orange-400 uppercase tracking-wide">⚠ Note: Please upload images in <span className="text-orange-500">WebP</span> format only</p>
                           <input className="w-full bg-transparent text-center text-xs text-gray-400 outline-none italic" placeholder="Image Caption (Optional)" value={section.content} onChange={(e) => updateSection(sIndex, e.target.value)} />
                         </div>
-                      ) : (section.type === 'heading' || section.type === 'paragraph') ? (
-                        <textarea className={`w-full bg-transparent outline-none ${section.type === 'heading' ? 'text-lg font-bold' : 'text-sm text-gray-600'}`} value={section.content} onChange={(e) => updateSection(sIndex, e.target.value)} rows={section.type === 'heading' ? 1 : 4} placeholder={`Enter ${section.type}...`} />
+                      ) : (section.type === 'heading' || section.type === 'sub-heading' || section.type === 'sub-point' || section.type === 'paragraph') ? (
+                        <textarea className={`w-full bg-transparent outline-none ${section.type === 'heading' ? 'text-lg font-bold' : section.type === 'sub-heading' ? 'text-base font-semibold text-gray-800' : section.type === 'sub-point' ? 'text-sm font-normal text-gray-600 leading-none' : 'text-sm text-gray-600'}`} value={section.content} onChange={(e) => updateSection(sIndex, e.target.value)} rows={section.type === 'heading' || section.type === 'sub-heading' ? 1 : section.type === 'sub-point' ? 2 : 4} placeholder={`Enter ${section.type}...`} />
                       ) : (section.type === 'table' && section.table) ? (
                         <div className="space-y-4 overflow-x-auto">
                            <div className="flex gap-2 mb-4">
@@ -341,15 +399,19 @@ const BlogAdmin = () => {
                       ) : (
                         <div className="space-y-4">
                           {section.listItems.map((item, lIndex) => (
-                            <div key={lIndex} className="grid grid-cols-1 gap-2 pl-4 border-l-2 border-[#292c44]/20">
-                              <input className="bg-transparent font-bold text-sm outline-none" placeholder="Item Title" value={item.title} onChange={(e) => updateListItem(sIndex, lIndex, 'title', e.target.value)} />
-                              <textarea className="bg-transparent text-xs text-gray-500 outline-none" placeholder="Description (Optional)" value={item.description} onChange={(e) => updateListItem(sIndex, lIndex, 'description', e.target.value)} rows="1" />
+                            <div key={lIndex} className="flex gap-2 items-start pl-4 border-l-2 border-[#292c44]/20">
+                              <div className="flex-1 grid grid-cols-1 gap-2">
+                                <input className="bg-transparent font-bold text-sm outline-none" placeholder="Item Title" value={item.title} onChange={(e) => updateListItem(sIndex, lIndex, 'title', e.target.value)} />
+                                <textarea className="bg-transparent text-xs text-gray-500 outline-none" placeholder="Description (Optional)" value={item.description} onChange={(e) => updateListItem(sIndex, lIndex, 'description', e.target.value)} rows="1" />
+                              </div>
+                              <button type="button" onClick={() => removeListItem(sIndex, lIndex)} className="text-red-300 hover:text-red-500 mt-1" title="Remove Item"><FiTrash2 size={14} /></button>
                             </div>
                           ))}
                           <button type="button" onClick={() => addListItem(sIndex)} className="text-[10px] font-black text-blue-600 uppercase tracking-widest">+ Add New Item</button>
                         </div>
                       )}
                     </div>
+                    </React.Fragment>
                   ))}
                 </div>
 
