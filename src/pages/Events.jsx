@@ -86,7 +86,8 @@ const EventsAdmin = () => {
       resetForm();
       fetchEvents();
       notifySuccess("Event synchronized successfully!");
-    } catch (err) {      notifyError("Error: " + (err.response?.data?.message || "Server error"));
+    } catch (err) {
+      notifyError("Error: " + (err.response?.data?.message || "Server error"));
     } finally {
       setLoading(false);
     }

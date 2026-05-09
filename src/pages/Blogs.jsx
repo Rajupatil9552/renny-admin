@@ -106,11 +106,23 @@ const BlogAdmin = () => {
       mainImage: blog.mainImage,
       status: blog.status,
       date: blog.date ? new Date(blog.date).toISOString().split('T')[0] : '',
-      bodySections: (blog.bodySections || []).map(sec =>
-        (sec.type === 'table' && !sec.table)
-          ? { ...sec, table: { headers: ['Column 1'], rows: [['']] } }
-          : sec
-      )
+      bodySections: (blog.bodySections || []).map(sec => {
+        if (sec.type === 'table' && !sec.table) {
+          return { ...sec, table: { headers: ['Column 1'], rows: [['']] } };
+        }
+        if (sec.type && sec.type.includes('list') && sec.listItems) {
+          return {
+            ...sec,
+            listItems: sec.listItems.map(item => ({
+              ...item,
+              descriptions: item.descriptions && item.descriptions.length > 0
+                ? item.descriptions
+                : [item.description || '']
+            }))
+          };
+        }
+        return sec;
+      })
     });
     setEditingId(blog._id);
     setIsEditing(true);
@@ -129,7 +141,7 @@ const BlogAdmin = () => {
       type,
       content: '',
       image: type === 'image' ? '' : undefined,
-      listItems: type.includes('list') ? [{ title: '', description: '' }] : [],
+      listItems: type.includes('list') ? [{ title: '', description: '', descriptions: [''] }] : [],
       table: type === 'table' ? { headers: ['Column 1'], rows: [['']] } : undefined
     };
     if (insertIndex !== null) {
@@ -180,7 +192,7 @@ const BlogAdmin = () => {
   const addListItem = (sIdx) => {
     const updated = [...formData.bodySections];
     const section = { ...updated[sIdx], listItems: [...updated[sIdx].listItems] };
-    section.listItems.push({ title: '', description: '' });
+    section.listItems.push({ title: '', description: '', descriptions: [''] });
     updated[sIdx] = section;
     setFormData({ ...formData, bodySections: updated });
   };
@@ -188,6 +200,45 @@ const BlogAdmin = () => {
   const removeListItem = (sIdx, lIdx) => {
     const updated = [...formData.bodySections];
     const section = { ...updated[sIdx], listItems: updated[sIdx].listItems.filter((_, i) => i !== lIdx) };
+    updated[sIdx] = section;
+    setFormData({ ...formData, bodySections: updated });
+  };
+
+  const updateListDescription = (sIdx, lIdx, dIdx, value) => {
+    const updated = [...formData.bodySections];
+    const section = { ...updated[sIdx], listItems: [...updated[sIdx].listItems] };
+    const item = { ...section.listItems[lIdx] };
+    const descs = [...(item.descriptions || [item.description || ''])];
+    descs[dIdx] = value;
+    item.descriptions = descs;
+    item.description = descs[0] || '';
+    section.listItems[lIdx] = item;
+    updated[sIdx] = section;
+    setFormData({ ...formData, bodySections: updated });
+  };
+
+  const addListDescription = (sIdx, lIdx) => {
+    const updated = [...formData.bodySections];
+    const section = { ...updated[sIdx], listItems: [...updated[sIdx].listItems] };
+    const item = { ...section.listItems[lIdx] };
+    const descs = [...(item.descriptions || [item.description || ''])];
+    descs.push('');
+    item.descriptions = descs;
+    section.listItems[lIdx] = item;
+    updated[sIdx] = section;
+    setFormData({ ...formData, bodySections: updated });
+  };
+
+  const removeListDescription = (sIdx, lIdx, dIdx) => {
+    const updated = [...formData.bodySections];
+    const section = { ...updated[sIdx], listItems: [...updated[sIdx].listItems] };
+    const item = { ...section.listItems[lIdx] };
+    let descs = [...(item.descriptions || [item.description || ''])];
+    if (descs.length <= 1) return;
+    descs = descs.filter((_, i) => i !== dIdx);
+    item.descriptions = descs;
+    item.description = descs[0] || '';
+    section.listItems[lIdx] = item;
     updated[sIdx] = section;
     setFormData({ ...formData, bodySections: updated });
   };
@@ -429,7 +480,37 @@ const BlogAdmin = () => {
                                 <div key={lIndex} className="flex gap-2 items-start pl-4 border-l-2 border-[#292c44]/20">
                                   <div className="flex-1 grid grid-cols-1 gap-2">
                                     <input className="bg-transparent font-bold text-sm outline-none" placeholder="Item Title" value={item.title} onChange={(e) => updateListItem(sIndex, lIndex, 'title', e.target.value)} />
-                                    <textarea className="bg-transparent text-xs text-gray-500 outline-none" placeholder="Description (Optional)" value={item.description} onChange={(e) => updateListItem(sIndex, lIndex, 'description', e.target.value)} rows="1" />
+                                    <div className="space-y-2 pl-2 border-l border-gray-100">
+                                      {(item.descriptions || [item.description || '']).map((desc, dIndex) => (
+                                        <div key={dIndex} className="flex gap-2 items-center">
+                                          <span className="text-[10px] text-gray-400 font-bold">{dIndex + 1}.</span>
+                                          <textarea 
+                                            className="flex-1 bg-transparent text-xs text-gray-500 outline-none" 
+                                            placeholder={`Description ${dIndex + 1} (Optional)`} 
+                                            value={desc} 
+                                            onChange={(e) => updateListDescription(sIndex, lIndex, dIndex, e.target.value)} 
+                                            rows="1" 
+                                          />
+                                          {(item.descriptions || [item.description || '']).length > 1 && (
+                                            <button 
+                                              type="button" 
+                                              onClick={() => removeListDescription(sIndex, lIndex, dIndex)} 
+                                              className="text-red-300 hover:text-red-500 p-1" 
+                                              title="Remove Description"
+                                            >
+                                              <FiX size={12} />
+                                            </button>
+                                          )}
+                                        </div>
+                                      ))}
+                                      <button 
+                                        type="button" 
+                                        onClick={() => addListDescription(sIndex, lIndex)} 
+                                        className="text-[10px] font-bold text-blue-500 hover:text-blue-700 uppercase tracking-wider"
+                                      >
+                                        + Add Description Paragraph
+                                      </button>
+                                    </div>
                                   </div>
                                   <button type="button" onClick={() => removeListItem(sIndex, lIndex)} className="text-red-300 hover:text-red-500 mt-1" title="Remove Item"><FiTrash2 size={14} /></button>
                                 </div>
