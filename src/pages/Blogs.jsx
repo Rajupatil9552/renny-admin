@@ -657,6 +657,29 @@ const BlogAdmin = () => {
                   {expandedId === blog._id ? <FiChevronUp /> : <FiChevronDown />}
                 </div>
               </div>
+              {expandedId === blog._id && (
+                <div className="px-6 pb-6 border-t border-gray-100 pt-4 bg-gray-50/30 space-y-4">
+                  <div>
+                    <span className="text-[10px] font-black uppercase text-gray-400 block mb-1">Excerpt / Summary</span>
+                    <p className="text-sm text-gray-600 font-medium">{blog.excerpt || 'No excerpt provided.'}</p>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-gray-100 pt-4">
+                    <div>
+                      <span className="text-[10px] font-black uppercase text-gray-400 block mb-1">SEO Title</span>
+                      <p className="text-sm text-[#292c44] font-bold">{blog.seoTitle || '—'}</p>
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-black uppercase text-gray-400 block mb-1">SEO Description</span>
+                      <p className="text-sm text-[#292c44] font-medium">{blog.seoDescription || '—'}</p>
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-black uppercase text-gray-400 block mb-1">SEO Keywords</span>
+                      <p className="text-sm text-[#292c44] font-medium">{blog.seoKeywords || '—'}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           ))}
         </div>
